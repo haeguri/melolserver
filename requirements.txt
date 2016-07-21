@@ -1,8 +1,9 @@
-beautifulsoup4==4.4.1
 Django==1.9.7
+beautifulsoup4==4.4.1
 django-cors-headers==1.1.0
 djangorestframework==3.3.3
 freeze==1.0.10
+pytz==2016.6.1
 selenium==2.53.6
 six==1.10.0
 xvfbwrapper==0.2.8
