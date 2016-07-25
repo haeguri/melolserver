@@ -3,16 +3,9 @@ import django
 import json
 import sys
 
-<<<<<<< HEAD
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 print("base_dir is", BASE_DIR)
-=======
-if 'DJANGO_SETTINGS_MODULE' in os.environ:
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'melol.settings'
-
-django.setup()
->>>>>>> ed9197a9de92734cc88538128fa54701b5c6aee8
 
 sys.path.append(BASE_DIR)
 # sys.path.append('/explicit/path/to')
