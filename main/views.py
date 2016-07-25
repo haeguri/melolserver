@@ -1,5 +1,5 @@
 from main.models import Schedule, Platform
-from main.serializers import ScheduleSerializer, PlatformSerializer
+from main.serializers import ScheduleSerializer, PlatformSerializer, FavorPlatformSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -23,7 +23,9 @@ def platform_list(request):
 
     return Response(serializer.data, status = status.HTTP_200_OK)
 
-@api_view(['POST'])
+@api_view(['GET'])
 def platform_favorites(request):
+    favor_platforms = Platform.objects.filter(is_favorite=True)
+    serializer = FavorPlatformSerializer(favor_platforms, many=True, context={'request':request})
 
-    return Response("", status = status.HTTP_200_OK)
+    return Response(serializer.data, status = status.HTTP_200_OK)

@@ -7,7 +7,7 @@ week_whitelist = ('평일(상)', '평일(하)', '토요일(상)', '토요일(하
 for line in range(1, 4):
     line = str(line)
     json_obj[line] = {}
-    tree = parse("line"+line+".xml")
+    tree = parse("pyscripts/line"+line+".xml")
     root = tree.getroot()
 
     for row in root.findall("Row"):
@@ -16,8 +16,12 @@ for line in range(1, 4):
 
         platform_name = row.find("역명").text
         t_week = row.find("요일별").text.split("(")
-        week_day = t_week[0] # 평일, 토요일, 휴일
-        direction = t_week[1][0] # 상, 하
+        week_day = t_week[0]
+        # direction = DAEGU_METRO_DIRECTION[line][]
+        if t_week[1][0] == '상':
+            direction = 'up'
+        else:
+            direction = 'down'
 
         if platform_name not in json_obj[line]:
             json_obj[line][platform_name] = {}
@@ -32,5 +36,5 @@ for line in range(1, 4):
             if t.text is not None:
                 json_obj[line][platform_name][week_day][direction].append(t.text)
 
-output = open('dg_metro.json', 'w')
+output = open('pyscripts/dg_metro.json', 'w')
 json.dump(json_obj, output)
