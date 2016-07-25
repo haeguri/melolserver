@@ -17,7 +17,7 @@ django.setup()
 
 from main.models import Platform
 
-with open("pyscripts/dg_metro.json") as data_file:
+with open(BASE_DIR+"/pyscripts/dg_metro.json") as data_file:
     data = json.load(data_file)
 
 # pprint(data['3']['칠곡경대병원'])
