@@ -2,7 +2,9 @@ import os
 import django
 import json
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'melol.settings'
+if 'DJANGO_SETTINGS_MODULE' in os.environ:
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'melol.settings'
+
 django.setup()
 
 from main.models import Platform
