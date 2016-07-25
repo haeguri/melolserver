@@ -24,5 +24,3 @@ with open(BASE_DIR+"/pyscripts/dg_metro.json") as data_file:
 for line, p_dict in data.items():
     for platform, t_table in p_dict.items():
         Platform.objects.create(name=platform, line=line, time_table=str(t_table))
-platform_list = Platform.objects.all()
-platform_list.delete()
