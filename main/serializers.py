@@ -11,6 +11,20 @@ DAEGU_METRO_DIRECTION = {
 
 class ScheduleSerializer(serializers.ModelSerializer):
 
+    def to_representation(self, instance):
+        ret = super(ScheduleSerializer, self).to_representation(instance)
+
+        loc_t = timezone.localtime(instance.date_time)
+
+        ret['date_time'] = str(loc_t.year) + "-" + str(loc_t.month) + "-" + str(loc_t.day) + " " + str(loc_t.hour) + ":"
+        if loc_t.minute < 10:
+            ret['date_time'] = ret['date_time'] + '0' + str(loc_t.minute)
+        else:
+            ret['date_time'] += str(loc_t.minute)
+
+        return ret
+
+
     class Meta:
         model = Schedule
         fields = ('id', 'date_time', 'event',)
