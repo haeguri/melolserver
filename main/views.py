@@ -1,5 +1,5 @@
 from rest_framework import views
-from main.models import Schedule, Platform
+from main.models import Schedule, Platform, Music
 from main.serializers import ScheduleSerializer, PlatformSerializer, FavorPlatformSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -8,8 +8,9 @@ from rest_framework.parsers import FileUploadParser
 from datetime import timedelta
 from django.utils import timezone
 from .csrf_exempt_session_auth import CsrfExemptSessionAuthentication
-# from rest_framework.authentication import BaseAuthentication
 from rest_framework.authentication import BasicAuthentication
+from django.http import StreamingHttpResponse
+from wsgiref.util import FileWrapper
 
 @api_view(['GET'])
 def schedule_list(request):
@@ -46,6 +47,25 @@ class FileUploadView(views.APIView):
         print("File format is", format)
         print("File object is", file_obj)
 
-        # do something stuff with uploaded file..
+        # do something stuff after uploaded file..
 
         return Response(status = 204)
+
+@api_view(['GET'])
+def mp3_download(request):
+    if request.method == 'GET':
+
+        cursor = request.query_params['cursor']
+        print(cursor)
+
+        if cursor == 'start':
+            music = Music.objects.get(id=1)
+        elif cursor == 'next':
+            music = Music.objects.get(id=2)
+        else:
+            music = Music.objects.get(id=1)
+
+    music_file = open(music.file.path, 'rb')
+    response = StreamingHttpResponse(FileWrapper(music_file), content_type='audio/mpeg')
+
+    return response
