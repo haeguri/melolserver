@@ -19,11 +19,18 @@ class Schedule(models.Model):
 
 class Music(models.Model):
     title = models.CharField(max_length=100)
-    created = models.DateTimeField()
+    created = models.DateTimeField(auto_created=True)
     file = models.FileField(upload_to=get_music_upload_path)
+    priority = models.PositiveSmallIntegerField(verbose_name='재생 우선순위', blank=True, null=True)
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if self.priority is None:
+            self.priority = Music.objects.order_by('-id')[0].priority + 1
+
+        super(Music, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         try:
@@ -32,6 +39,7 @@ class Music(models.Model):
             print("이미 음악 파일이 삭제 됐습니다.")
 
         super(Music, self).delete(*args, **kwargs)
+
 
 class Platform(models.Model):
     name = models.CharField(max_length=20)

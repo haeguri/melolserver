@@ -1,4 +1,4 @@
-from .models import Schedule, Platform
+from .models import Schedule, Platform, Music
 from rest_framework import serializers
 from django.utils import timezone
 
@@ -84,3 +84,10 @@ class FavorPlatformSerializer(serializers.ModelSerializer):
     class Meta:
         model = Platform
         fields = ('id', 'name', 'line', 'is_favorite', 'time_table',)
+
+
+class MusicSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Music
+        fields = ('id', 'title', 'created', 'priority')

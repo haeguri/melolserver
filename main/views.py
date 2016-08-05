@@ -1,6 +1,6 @@
 from rest_framework import views
 from main.models import Schedule, Platform, Music
-from main.serializers import ScheduleSerializer, PlatformSerializer, FavorPlatformSerializer
+from main.serializers import ScheduleSerializer, PlatformSerializer, FavorPlatformSerializer, MusicSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -51,21 +51,23 @@ class FileUploadView(views.APIView):
 
         return Response(status = 204)
 
+music_cursor = 0
+
 @api_view(['GET'])
-def mp3_download(request):
+def music(request):
     if request.method == 'GET':
+        if 'cursor' not in request.query_params:
+            musics = Music.objects.all().order_by('-priority')
 
-        cursor = request.query_params['cursor']
-        print(cursor)
+            serializer = MusicSerializer(musics, many=True, context={'request':request})
 
-        if cursor == 'start':
-            music = Music.objects.get(id=1)
-        elif cursor == 'next':
-            music = Music.objects.get(id=2)
+            return Response(serializer.data, status = status.HTTP_200_OK)
+
         else:
-            music = Music.objects.get(id=1)
+            cursor = request.query_params['cursor']
+            music = Music.objects.get(priority = cursor)
 
-    music_file = open(music.file.path, 'rb')
-    response = StreamingHttpResponse(FileWrapper(music_file), content_type='audio/mpeg')
+            music_file = open(music.file.path, 'rb')
+            response = StreamingHttpResponse(FileWrapper(music_file), content_type='audio/mpeg')
 
-    return response
+            return response
