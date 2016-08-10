@@ -14,10 +14,13 @@ from wsgiref.util import FileWrapper
 
 @api_view(['GET'])
 def schedule_list(request):
-    ahead_one_week = timezone.now() + timedelta(days=7)
-    local_ahead_one_week = timezone.localtime(ahead_one_week)
+    # ahead_one_week = timezone.now() + timedelta(days=7)
+    # local_ahead_one_week = timezone.localtime(ahead_one_week)
+    # schedules = Schedule.objects.filter(date_time__gte=timezone.localtime(timezone.now()), date_time__lte=local_ahead_one_week)
 
-    schedules = Schedule.objects.filter(date_time__gte=timezone.localtime(timezone.now()), date_time__lte=local_ahead_one_week)
+    # 테스트용
+    schedules = Schedule.objects.all()
+
     serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
 
     return Response(serializer.data, status = status.HTTP_200_OK)
