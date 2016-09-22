@@ -38,7 +38,7 @@ class Music(models.Model):
         except:
             print("이미 음악 파일이 삭제 됐습니다.")
 
-        super(Music, self).delete(*args, **kwargs)
+            super(Music, self).delete(*args, **kwargs)
 
 
 class Platform(models.Model):

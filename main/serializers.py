@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.utils import timezone
 
 KOREA_HOLIDAY_2016 = ('8/15','9/14','9/15','9/16','10/3','10/9','12/25',)
+
 DAEGU_METRO_DIRECTION = {
     '1':{'up':'대곡','down':'안심'},
     '2':{'up':'문양','down':'안심'},
@@ -48,9 +49,10 @@ class FavorPlatformSerializer(serializers.ModelSerializer):
         today_md = str(timezone.localtime(timezone.now()).month) + "/" + str(timezone.localtime(timezone.now()).day)
         today = timezone.localtime(timezone.now()).weekday()
 
-        # cur_hour = str(timezone.localtime(timezone.now()).hour)
-        # cur_minute = str(timezone.localtime(timezone.now()).minute)
-        cur_time = 830
+        cur_hour = str(timezone.localtime(timezone.now()).hour)
+        cur_minute = str(timezone.localtime(timezone.now()).minute)
+        cur_time = int(str(cur_hour)+str(cur_minute))
+        # cur_time = 830
 
         # print("month and day", today_md)
 

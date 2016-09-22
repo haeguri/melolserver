@@ -9,8 +9,9 @@ from datetime import timedelta
 from django.utils import timezone
 from .csrf_exempt_session_auth import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, HttpResponse, JsonResponse
 from wsgiref.util import FileWrapper
+import json
 
 @api_view(['GET'])
 def schedule_list(request):
@@ -22,15 +23,16 @@ def schedule_list(request):
     schedules = Schedule.objects.all()
 
     serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
+    response_data = {'result':serializer.data}
 
-    return Response(serializer.data, status = status.HTTP_200_OK)
+    return Response(response_data, status = status.HTTP_200_OK)
 
 @api_view(['GET'])
 def platform_list(request):
     platforms = Platform.objects.all()
     serializer = PlatformSerializer(platforms, many=True, context={'request':request})
-
-    return Response(serializer.data, status = status.HTTP_200_OK)
+    response_data = {'result':serializer.data}
+    return Response(response_data, status = status.HTTP_200_OK)
 
 @api_view(['GET'])
 def platform_favorites(request):
