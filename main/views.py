@@ -13,6 +13,11 @@ from django.http import StreamingHttpResponse, HttpResponse, JsonResponse
 from wsgiref.util import FileWrapper
 import json
 
+class MelolResponse(Response):
+    def __init__(self, data=None, status=None):
+        super(MelolResponse, self).__init__(data, status=status)
+        self.data = {'result': data}
+
 @api_view(['GET'])
 def schedule_list(request):
     # ahead_one_week = timezone.now() + timedelta(days=7)
@@ -23,23 +28,22 @@ def schedule_list(request):
     schedules = Schedule.objects.all()
 
     serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
-    response_data = {'result':serializer.data}
 
-    return Response(response_data, status = status.HTTP_200_OK)
+    return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def platform_list(request):
     platforms = Platform.objects.all()
     serializer = PlatformSerializer(platforms, many=True, context={'request':request})
-    response_data = {'result':serializer.data}
-    return Response(response_data, status = status.HTTP_200_OK)
+
+    return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def platform_favorites(request):
     favor_platforms = Platform.objects.filter(is_favorite=True)
     serializer = FavorPlatformSerializer(favor_platforms, many=True, context={'request':request})
 
-    return Response(serializer.data, status = status.HTTP_200_OK)
+    return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
 class FileUploadView(views.APIView):
     parser_classes = (FileUploadParser, )
@@ -54,7 +58,7 @@ class FileUploadView(views.APIView):
 
         # do something stuff after uploaded file..
 
-        return Response(status = 204)
+        return Response(status=204)
 
 music_cursor = 0
 
@@ -66,7 +70,7 @@ def music(request):
 
             serializer = MusicSerializer(musics, many=True, context={'request':request})
 
-            return Response(serializer.data, status = status.HTTP_200_OK)
+            return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
         else:
             cursor = request.query_params['cursor']

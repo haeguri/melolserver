@@ -10,6 +10,7 @@ DAEGU_METRO_DIRECTION = {
     '3':{'up':'칠곡경대병원','down':'용지'}
 }
 
+
 class ScheduleSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
