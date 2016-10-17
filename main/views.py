@@ -18,18 +18,35 @@ class MelolResponse(Response):
         super(MelolResponse, self).__init__(data, status=status)
         self.data = {'result': data}
 
-@api_view(['GET'])
+@api_view(['GET', 'POST', 'PUT'])
 def schedule_list(request):
     # ahead_one_week = timezone.now() + timedelta(days=7)
     # local_ahead_one_week = timezone.localtime(ahead_one_week)
     # schedules = Schedule.objects.filter(date_time__gte=timezone.localtime(timezone.now()), date_time__lte=local_ahead_one_week)
+    print("Enter")
 
     # 테스트용
-    schedules = Schedule.objects.all()
+    if request.method == 'GET':
+        schedules = Schedule.objects.all()
 
-    serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
+        serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
 
-    return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'POST':
+
+        Schedule.objects.create(start_date=request.data['start_date'], end_date=request.data['end_date'], event=request.data['event'])
+
+        schedules = Schedule.objects.all()
+
+        serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
+
+        return MelolResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+    elif request.method == 'PUT':
+        print("PUT METHOD")
+
+        return MelolResponse("", status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def platform_list(request):

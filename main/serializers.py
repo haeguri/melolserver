@@ -13,28 +13,26 @@ DAEGU_METRO_DIRECTION = {
 
 class ScheduleSerializer(serializers.ModelSerializer):
 
-    def to_representation(self, instance):
-        ret = super(ScheduleSerializer, self).to_representation(instance)
-
-        loc_t = timezone.localtime(instance.date_time)
-        cur_t = timezone.localtime(timezone.now())
-
-        if cur_t.year != loc_t.year:
-            ret['year'] = str(loc_t.year)
-
-        ret['date'] = str(loc_t.month) + "." + str(loc_t.day)
-        ret['time'] = str(loc_t.hour) + ":"
-
-        if loc_t.minute < 10:
-            ret['time'] = ret['time'] + '0' + str(loc_t.minute)
-        else:
-            ret['time'] += str(loc_t.minute)
-
-        return ret
+    # def to_representation(self, instance):
+    #     ret = super(ScheduleSerializer, self).to_representation(instance)
+    #
+    #     # loc_t = timezone.localtime(instance.date_time)
+    #     # cur_t = timezone.localtime(timezone.now())
+    #
+    #     # ret['year'] = str(loc_t.year)
+    #     # ret['date'] = str(loc_t.month) + "." + str(loc_t.day)
+    #     # ret['time'] = str(loc_t.hour) + ":"
+    #     #
+    #     # if loc_t.minute < 10:
+    #     #     ret['time'] = ret['time'] + '0' + str(loc_t.minute)
+    #     # else:
+    #     #     ret['time'] += str(loc_t.minute)
+    #
+    #     return ret
 
     class Meta:
         model = Schedule
-        fields = ('id', 'event',)
+        fields = ('id', 'event', 'start_date', 'end_date')
 
 class PlatformSerializer(serializers.ModelSerializer):
 

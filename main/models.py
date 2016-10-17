@@ -11,11 +11,13 @@ def get_music_upload_path(instance, filename):
     return "musics/" + timezone.localtime(timezone.now()).strftime("%y-%d-%d") + "/" + instance.title + "/" + filename
 
 class Schedule(models.Model):
-    date_time = models.DateTimeField()
+    # date_time = models.DateTimeField()
+    start_date = models.DateField(blank=False, null=False)
+    end_date = models.DateField(blank=False, null=False)
     event = models.CharField(max_length=50)
 
     def __str__(self):
-        return str(self.date_time) + " " + self.event
+        return self.event
 
 class Music(models.Model):
     title = models.CharField(max_length=100)
