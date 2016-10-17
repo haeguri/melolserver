@@ -44,9 +44,19 @@ def schedule_list(request):
         return MelolResponse(serializer.data, status=status.HTTP_201_CREATED)
 
     elif request.method == 'PUT':
-        print("PUT METHOD")
+        schedule = Schedule.objects.get(id=request.data['id'])
 
-        return MelolResponse("", status=status.HTTP_200_OK)
+        schedule.start_date = request.data['start_date']
+        schedule.end_date = request.data['end_date']
+        schedule.event = request.data['event']
+
+        schedule.save()
+
+        schedules = Schedule.objects.all()
+
+        serializer = ScheduleSerializer(schedules, many=True, context={'requeset':request})
+
+        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def platform_list(request):
