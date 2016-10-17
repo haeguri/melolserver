@@ -18,12 +18,11 @@ class MelolResponse(Response):
         super(MelolResponse, self).__init__(data, status=status)
         self.data = {'result': data}
 
-@api_view(['GET', 'POST', 'PUT'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def schedule_list(request):
     # ahead_one_week = timezone.now() + timedelta(days=7)
     # local_ahead_one_week = timezone.localtime(ahead_one_week)
     # schedules = Schedule.objects.filter(date_time__gte=timezone.localtime(timezone.now()), date_time__lte=local_ahead_one_week)
-    print("Enter")
 
     # 테스트용
     if request.method == 'GET':
@@ -41,7 +40,7 @@ def schedule_list(request):
 
         serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
 
-        return MelolResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         schedule = Schedule.objects.get(id=request.data['id'])
@@ -54,7 +53,22 @@ def schedule_list(request):
 
         schedules = Schedule.objects.all()
 
-        serializer = ScheduleSerializer(schedules, many=True, context={'requeset':request})
+        serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
+
+        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'DELETE':
+        try:
+            schedule = Schedule.objects.get(id=request.data['id'])
+        except:
+            print("No exist schedule.")
+            return MelolResponse("", status=status.HTTP_404_NOT_FOUND)
+
+        schedule.delete()
+
+        schedules = Schedule.objects.all()
+
+        serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 

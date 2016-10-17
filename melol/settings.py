@@ -138,4 +138,11 @@ MEDIA_URL = '/uploads/'
 
 MEDIA_ROOT = 'upload_files'
 
-
+# CORS_ALLOW_METHODS = (
+#     'DELETE',
+#     'GET',
+#     'OPTIONS',
+#     'PATCH',
+#     'POST',
+#     'PUT',
+# )
