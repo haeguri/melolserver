@@ -6,5 +6,7 @@ urlpatterns = [
     url(r'^platforms/$', views.platform_list, name='platform_list'),
     url(r'^platforms/favorites/$', views.platform_favorites, name='platform_favorites'),
     url(r'^upload/(?P<filename>[\w.]{0,256})/$', views.FileUploadView.as_view(), name='file_upload_view'),
+    # url(r'^musics/$', views.file)
     url(r'^music/$', views.music, name='music'),
+    # url(r'^platforms/toggle$', views.platform_fav_toggle, name='platform_fav_toggle')
 ]
