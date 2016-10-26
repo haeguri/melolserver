@@ -68,7 +68,8 @@ def schedule_list(request):
 def platform_list(request):
     if request.method == 'GET':
         if 'line' in request.query_params:
-            platforms = Platform.objects.filter(line='1')
+
+            platforms = Platform.objects.filter(line=request.query_params['line'])
         else:
             platforms = Platform.objects.all()
 
