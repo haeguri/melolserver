@@ -23,34 +23,28 @@ def schedule_list(request):
     # ahead_one_week = timezone.now() + timedelta(days=7)
     # local_ahead_one_week = timezone.localtime(ahead_one_week)
     # schedules = Schedule.objects.filter(date_time__gte=timezone.localtime(timezone.now()), date_time__lte=local_ahead_one_week)
-
     # 테스트용
     if request.method == 'GET':
-        schedules = Schedule.objects.all()
+        schedules = Schedule.objects.all().order_by('end_date')
 
         serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
-
         Schedule.objects.create(start_date=request.data['start_date'], end_date=request.data['end_date'], event=request.data['event'])
-
         schedules = Schedule.objects.all()
-
         serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         schedule = Schedule.objects.get(id=request.data['id'])
-
         schedule.start_date = request.data['start_date']
         schedule.end_date = request.data['end_date']
         schedule.event = request.data['event']
 
         schedule.save()
-
         schedules = Schedule.objects.all()
 
         serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
@@ -65,19 +59,22 @@ def schedule_list(request):
             return MelolResponse("", status=status.HTTP_404_NOT_FOUND)
 
         schedule.delete()
-
         schedules = Schedule.objects.all()
-
         serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def platform_list(request):
-    platforms = Platform.objects.all()
-    serializer = PlatformSerializer(platforms, many=True, context={'request':request})
+    if request.method == 'GET':
+        if 'line' in request.query_params:
+            platforms = Platform.objects.filter(line='1')
+        else:
+            platforms = Platform.objects.all()
 
-    return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+        serializer = PlatformSerializer(platforms, many=True, context={'request':request})
+
+        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def platform_favorites(request):
