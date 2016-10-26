@@ -68,7 +68,7 @@ def schedule_list(request):
 def platform_list(request):
     if request.method == 'GET':
         if 'line' in request.query_params:
-            platforms = Platform.objects.filter(line='1')
+            platforms = Platform.objects.filter(line=request.query_params['line'])
         else:
             platforms = Platform.objects.all()
 
@@ -76,23 +76,55 @@ def platform_list(request):
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def platform_favorites(request):
-    favor_platforms = Platform.objects.filter(is_favorite=True)
-    serializer = FavorPlatformSerializer(favor_platforms, many=True, context={'request':request})
+    if request.method == 'GET':
+        favor_platforms = Platform.objects.filter(is_favorite=True)
+        serializer = FavorPlatformSerializer(favor_platforms, many=True, context={'request':request})
 
-    return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+        print("before", len(Platform.objects.filter(is_favorite=True)))
+        p = Platform.objects.get(id=request.data)
+        p.is_favorite = not p.is_favorite
+        p.save()
+        print("after", len(Platform.objects.filter(is_favorite=True)))
+
+        return MelolResponse(status=status.HTTP_201_CREATED)
+
+# @api_view(['GET'])
+# def platform_fav_toggle(request):
+#
+#     print("before favorites length ", len(Platform.objects.filter(is_favorites=True)))
+#     id = request.query_params['id']
+#
+#     p = Platform.objects.get(id=id)
+#     p.is_favorite = not p.is_favorite
+#     p.save()
+#
+#     print("after favorites length ", len(Platform.objects.filter(is_favorites=True)))
+#
+#     return MelolResponse(status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+def music(request, filename, format=None):
+
+    if request.method == 'POST':
+        file_obj = request.data['file']
+
+        print("File name is", filename)
+        print("File format is", format)
+        print("File object is", file_obj)
+
+        return MelolResponse(status=status.HTTP_201_CREATED)
+
 
 class FileUploadView(views.APIView):
     parser_classes = (FileUploadParser, )
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication, )
 
     def post(self, request, filename, format=None):
-        file_obj = request.data['file']
 
-        print("File name is", filename)
-        print("File format is", format)
-        print("File object is", file_obj)
 
         # do something stuff after uploaded file..
 
@@ -100,7 +132,7 @@ class FileUploadView(views.APIView):
 
 music_cursor = 0
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def music(request):
     if request.method == 'GET':
         if 'cursor' not in request.query_params:
@@ -118,3 +150,10 @@ def music(request):
             response = StreamingHttpResponse(FileWrapper(music_file), content_type='audio/mpeg')
 
             return response
+    elif request.method == 'POST':
+        file_obj = request.data['file']
+        # file_ob
+
+        # print("File name is", filename)
+        # print("File format is", format)
+        # print("File object is", file_obj)
