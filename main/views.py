@@ -85,7 +85,7 @@ def platform_favorites(request):
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'POST':
         print("before", len(Platform.objects.filter(is_favorite=True)))
-        p = Platform.objects.get(id=request.data)
+        p = Platform.objects.get(id=request.data['id'])
         p.is_favorite = not p.is_favorite
         p.save()
         print("after", len(Platform.objects.filter(is_favorite=True)))
