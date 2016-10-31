@@ -15,7 +15,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schedule
-        fields = ('id', 'event', 'start_date', 'end_date')
+        fields = "__all__"
 
 class PlatformSerializer(serializers.ModelSerializer):
 
@@ -72,17 +72,17 @@ class FavorPlatformSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Platform
-        fields = ('id', 'name', 'line', 'is_favorite', 'time_table',)
+        fields = "__all__"
 
 
 class MusicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Music
-        fields = ('id', 'title', 'created', 'priority')
+        fields = "__all__"
 
 class PhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
-        fields = '__all__'
+        fields = "__all__"
