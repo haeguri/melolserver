@@ -1,4 +1,4 @@
-from .models import Schedule, Platform, Music
+from .models import Schedule, Platform, Music, Photo
 from rest_framework import serializers
 from django.utils import timezone
 
@@ -12,23 +12,6 @@ DAEGU_METRO_DIRECTION = {
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
-
-    # def to_representation(self, instance):
-    #     ret = super(ScheduleSerializer, self).to_representation(instance)
-    #
-    #     # loc_t = timezone.localtime(instance.date_time)
-    #     # cur_t = timezone.localtime(timezone.now())
-    #
-    #     # ret['year'] = str(loc_t.year)
-    #     # ret['date'] = str(loc_t.month) + "." + str(loc_t.day)
-    #     # ret['time'] = str(loc_t.hour) + ":"
-    #     #
-    #     # if loc_t.minute < 10:
-    #     #     ret['time'] = ret['time'] + '0' + str(loc_t.minute)
-    #     # else:
-    #     #     ret['time'] += str(loc_t.minute)
-    #
-    #     return ret
 
     class Meta:
         model = Schedule
@@ -97,3 +80,9 @@ class MusicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Music
         fields = ('id', 'title', 'created', 'priority')
+
+class PhotoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Photo
+        fields = '__all__'

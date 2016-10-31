@@ -1,13 +1,13 @@
 from rest_framework import views
-from main.models import Schedule, Platform, Music
-from main.serializers import ScheduleSerializer, PlatformSerializer, FavorPlatformSerializer, MusicSerializer
+from main.models import Schedule, Platform, Music, Photo
+from main.serializers import ScheduleSerializer, PlatformSerializer, FavorPlatformSerializer, MusicSerializer, PhotoSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.parsers import FileUploadParser
 from datetime import timedelta
 from django.utils import timezone
-from .csrf_exempt_session_auth import CsrfExemptSessionAuthentication
+# from .csrf_exempt_session_auth import CsrfExemptSessionAuthentication
 from rest_framework.authentication import BasicAuthentication
 from django.http import StreamingHttpResponse, HttpResponse, JsonResponse
 from wsgiref.util import FileWrapper
@@ -106,34 +106,33 @@ def platform_favorites(request):
 #
 #     return MelolResponse(status.HTTP_201_CREATED)
 
-@api_view(['POST'])
-def music(request, filename, format=None):
-
-    if request.method == 'POST':
-        file_obj = request.data['file']
-
-        print("File name is", filename)
-        print("File format is", format)
-        print("File object is", file_obj)
-
-        return MelolResponse(status=status.HTTP_201_CREATED)
-
-
-class FileUploadView(views.APIView):
-    parser_classes = (FileUploadParser, )
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication, )
-
-    def post(self, request, filename, format=None):
+# @api_view(['POST'])
+# def music(request, filename, format=None):
+#
+#     if request.method == 'POST':
+#         file_obj = request.data['file']
+#
+#         print("File name is", filename)
+#         print("File format is", format)
+#         print("File object is", file_obj)
+#
+#         return MelolResponse(status=status.HTTP_201_CREATED)
 
 
-        # do something stuff after uploaded file..
-
-        return Response(status=204)
-
+# class FileUploadView(views.APIView):
+#     parser_classes = (FileUploadParser, )
+#     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication, )
+#
+#     def post(self, request, filename, format=None):
+#
+#
+#         # do something stuff after uploaded file..
+#
+#         return Response(status=204)
 music_cursor = 0
-
 @api_view(['GET', 'POST'])
 def music(request):
+    print("Music ..")
     if request.method == 'GET':
         if 'cursor' not in request.query_params:
             musics = Music.objects.all().order_by('-priority')
@@ -150,10 +149,23 @@ def music(request):
             response = StreamingHttpResponse(FileWrapper(music_file), content_type='audio/mpeg')
 
             return response
-    elif request.method == 'POST':
-        file_obj = request.data['file']
-        # file_ob
 
-        # print("File name is", filename)
-        # print("File format is", format)
-        # print("File object is", file_obj)
+    elif request.method == 'POST':
+        file = request.data['file']
+        filename = request.data['filename']
+
+        music = Music.objects.create(title=request.data['filename'], file=request.data['file'])
+
+        print(music)
+        # print("File Name is", type(filename))
+        # print("File is", type(file))
+
+        return MelolResponse(status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def photo(request):
+    if request.method == 'GET':
+        photos = Photo.objects.all()
+        serializer = PhotoSerializer(photos, many=True, context={'request':request})
+
+        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
