@@ -11,10 +11,10 @@ from time import time
 def get_photo_upload_path(instance, filename):
     print("created is ", instance.created)
     # print()
-    return "photos/" + timezone.localtime(timezone.now()).strftime("%y-%d-%d") + "/" + str(time()) + "/" + filename
+    return "photos/" + timezone.localtime(timezone.now()).strftime("%y-%m-%d") + "/" + str(time()) + "/" + filename
 
 def get_music_upload_path(instance, filename):
-    return "musics/" + timezone.localtime(timezone.now()).strftime("%y-%d-%d") + "/" + instance.title + "/" + filename
+    return "musics/" + timezone.localtime(timezone.now()).strftime("%y-%m-%d") + "/" + str(time()) + "/" + filename
 
 class Schedule(models.Model):
     start_date = models.DateField(blank=False, null=False)
@@ -39,13 +39,13 @@ class Photo(models.Model):
             super(Photo, self).delete(*args, **kwargs)
 
 class Music(models.Model):
-    title = models.CharField(max_length=100)
+    # title = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     file = models.FileField(upload_to=get_music_upload_path)
     priority = models.PositiveSmallIntegerField(verbose_name='재생 우선순위', blank=True, null=True)
 
     def __str__(self):
-        return self.title
+        return str(self.id) + "@" + str(self.file)
 
     def save(self, *args, **kwargs):
         if self.priority is None:

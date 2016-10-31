@@ -152,9 +152,9 @@ def music(request):
 
     elif request.method == 'POST':
         file = request.data['file']
-        filename = request.data['filename']
+        # filename = request.data['filename']
 
-        music = Music.objects.create(title=request.data['filename'], file=request.data['file'])
+        music = Music.objects.create(file=request.data['file'])
 
         print(music)
         # print("File Name is", type(filename))
