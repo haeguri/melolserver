@@ -162,10 +162,20 @@ def music(request):
 
         return MelolResponse(status=status.HTTP_200_OK)
 
+page_getter = lambda x: ((x-1)*9, (x-1)*9+9)
+
 @api_view(['GET'])
 def photo(request):
     if request.method == 'GET':
-        photos = Photo.objects.all()
+        if 'page' not in request.query_params:
+            photos = Photo.objects.all()
+        else:
+            f, t = page_getter(int(request.query_params['page']))
+            all_photos = Photo.objects.all()
+            photos = all_photos[f:t]
+
+        print(len(photos))
+
         serializer = PhotoSerializer(photos, many=True, context={'request':request})
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
