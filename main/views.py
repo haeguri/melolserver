@@ -4,21 +4,17 @@ from main.serializers import ScheduleSerializer, PlatformSerializer, FavorPlatfo
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.parsers import FileUploadParser
 from datetime import timedelta
 from django.utils import timezone
-# from .csrf_exempt_session_auth import CsrfExemptSessionAuthentication
-from rest_framework.authentication import BasicAuthentication
-from django.http import StreamingHttpResponse, HttpResponse, JsonResponse
+from django.http import StreamingHttpResponse
 from wsgiref.util import FileWrapper
-import json
 
 class MelolResponse(Response):
     def __init__(self, data=None, status=None):
         super(MelolResponse, self).__init__(data, status=status)
         self.data = {'result': data}
 
-@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+@api_view(['GET', 'POST', 'PUT'])
 def schedule_list(request):
     # ahead_one_week = timezone.now() + timedelta(days=7)
     # local_ahead_one_week = timezone.localtime(ahead_one_week)
@@ -51,7 +47,23 @@ def schedule_list(request):
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
-    elif request.method == 'DELETE':
+    # elif request.method == 'DELETE':
+    #     try:
+    #         schedule = Schedule.objects.get(id=request.data['id'])
+    #     except:
+    #         print("No exist schedule.")
+    #         return MelolResponse("", status=status.HTTP_404_NOT_FOUND)
+    #
+    #     schedule.delete()
+    #     schedules = Schedule.objects.all()
+    #     serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
+    #
+    #     return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def schedule_delete(request):
+    if request.method == 'POST':
         try:
             schedule = Schedule.objects.get(id=request.data['id'])
         except:
@@ -92,43 +104,6 @@ def platform_favorites(request):
 
         return MelolResponse(status=status.HTTP_201_CREATED)
 
-# @api_view(['GET'])
-# def platform_fav_toggle(request):
-#
-#     print("before favorites length ", len(Platform.objects.filter(is_favorites=True)))
-#     id = request.query_params['id']
-#
-#     p = Platform.objects.get(id=id)
-#     p.is_favorite = not p.is_favorite
-#     p.save()
-#
-#     print("after favorites length ", len(Platform.objects.filter(is_favorites=True)))
-#
-#     return MelolResponse(status.HTTP_201_CREATED)
-
-# @api_view(['POST'])
-# def music(request, filename, format=None):
-#
-#     if request.method == 'POST':
-#         file_obj = request.data['file']
-#
-#         print("File name is", filename)
-#         print("File format is", format)
-#         print("File object is", file_obj)
-#
-#         return MelolResponse(status=status.HTTP_201_CREATED)
-
-
-# class FileUploadView(views.APIView):
-#     parser_classes = (FileUploadParser, )
-#     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication, )
-#
-#     def post(self, request, filename, format=None):
-#
-#
-#         # do something stuff after uploaded file..
-#
-#         return Response(status=204)
 music_cursor = 0
 @api_view(['GET', 'POST'])
 def music(request):
@@ -164,18 +139,20 @@ def music(request):
 
 page_getter = lambda x: ((x-1)*9, (x-1)*9+9)
 
-@api_view(['GET'])
-def photo(request):
-    if request.method == 'GET':
-        if 'page' not in request.query_params:
-            photos = Photo.objects.all()
-        else:
-            f, t = page_getter(int(request.query_params['page']))
-            all_photos = Photo.objects.all()
-            photos = all_photos[f:t]
-
-        print(len(photos))
-
-        serializer = PhotoSerializer(photos, many=True, context={'request':request})
-
-        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+# @api_view(['GET'])
+# def photo(request):
+#     if request.method == 'GET':
+#         if 'page' not in request.query_params:
+#             photos = Photo.objects.all()
+#         else:
+#             page = request.query_params['page']
+#             f, t = page_getter(int(page))
+#             all_photos = Photo.objects.all()
+#             # next_page =
+#             photos = all_photos[f:t]
+#
+#         print(len(photos))
+#
+#         serializer = PhotoSerializer(photos, many=True, context={'request':request})
+#
+#         return Response({'result':serializer.data, 'last_page':last_page, 'first_page':first_page}, status=status.HTTP_200_OK)
