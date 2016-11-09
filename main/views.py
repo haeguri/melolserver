@@ -47,20 +47,6 @@ def schedule_list(request):
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
-    # elif request.method == 'DELETE':
-    #     try:
-    #         schedule = Schedule.objects.get(id=request.data['id'])
-    #     except:
-    #         print("No exist schedule.")
-    #         return MelolResponse("", status=status.HTTP_404_NOT_FOUND)
-    #
-    #     schedule.delete()
-    #     schedules = Schedule.objects.all()
-    #     serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
-    #
-    #     return MelolResponse(serializer.data, status=status.HTTP_200_OK)
-
-
 @api_view(['POST'])
 def schedule_delete(request):
     if request.method == 'POST':
@@ -126,34 +112,56 @@ def music(request):
             return response
 
     elif request.method == 'POST':
-        file = request.data['file']
-        # filename = request.data['filename']
-
-        music = Music.objects.create(file=request.data['file'])
-
-        print(music)
-        # print("File Name is", type(filename))
-        # print("File is", type(file))
+        Music.objects.create(file=request.data['file'])
 
         return MelolResponse(status=status.HTTP_200_OK)
 
-page_getter = lambda x: ((x-1)*9, (x-1)*9+9)
+page_to_index = lambda x: ((x-1)*9, ((x-1)*9)+9)
+
 
 @api_view(['GET'])
 def photo(request):
     if request.method == 'GET':
-        # if 'page' not in request.query_params:
-        photos = Photo.objects.all()
-        # else:
-            # page = request.query_params['page']
-            # f, t = page_getter(int(page))
-            # all_photos = Photo.objects.all()
-            # # next_page =
-            # photos = all_photos[f:t]
+        if 'page' not in request.query_params:
+            photos = Photo.objects.all()
+            serializer = PhotoSerializer(photos, many=True, context={'request':request})
 
-        print(len(photos))
+            return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+        else:
+            page = int(request.query_params['page'])
+            photos_all = Photo.objects.all()
 
-        serializer = PhotoSerializer(photos, many=True, context={'request':request})
+            photo_count = len(photos_all)
+            page_count = photo_count // 9
 
-        # return Response({'result':serializer.data, 'last_page':last_page, 'first_page':first_page}, status=status.HTTP_200_OK)
-        return MelolResponse(serializer.data, status=status.HTTP_200_OK)
+            if photo_count % 9 != 0:
+                page_count += 1
+
+            if page_count < page or page < 1:
+                return Response({'result':'잘못된 페이지 번호'}, status=status.HTTP_400_BAD_REQUEST)
+
+            from_i, to_i = page_to_index(page)
+
+            photos = photos_all[from_i:to_i]
+
+            prev_page = page - 1
+
+            if prev_page < 1:
+                prev_page = page_count
+
+            next_page = (page+1) % (page_count+1)
+
+            if next_page == 0:
+                next_page += 1
+
+            serializer = PhotoSerializer(photos, many=True, context={'request':request})
+
+            result = {
+                'count':photo_count,
+                'next':next_page,
+                'prev':prev_page,
+                'cur':serializer.data
+            }
+
+            return Response({'result':result}, status=status.HTTP_200_OK)
+
