@@ -119,7 +119,7 @@ def music(request):
 page_to_index = lambda x: ((x-1)*9, ((x-1)*9)+9)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def photo(request):
     if request.method == 'GET':
         if 'page' not in request.query_params:
@@ -165,3 +165,9 @@ def photo(request):
 
             return Response({'result':result}, status=status.HTTP_200_OK)
 
+    elif request.method == 'POST':
+        # print("file is", request.data('file'))
+        print("File is ", type(request.data['file']))
+        p = Photo.objects.create(file=request.data['file'])
+
+        return Response(p.file.url, status=status.HTTP_201_CREATED)

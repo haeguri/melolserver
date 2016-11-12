@@ -9,9 +9,7 @@ LINES = (
 from time import time
 
 def get_photo_upload_path(instance, filename):
-    print("created is ", instance.created)
-    # print()
-    return "photos/" + timezone.localtime(timezone.now()).strftime("%y-%m-%d") + "/" + str(time()) + "/" + filename
+    return "photos/" + filename
 
 def get_music_upload_path(instance, filename):
     return "musics/" + timezone.localtime(timezone.now()).strftime("%y-%m-%d") + "/" + str(time()) + "/" + filename
