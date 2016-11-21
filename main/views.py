@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.http import StreamingHttpResponse
 from wsgiref.util import FileWrapper
 
+import requests
+
 class MelolResponse(Response):
     def __init__(self, data=None, status=None):
         super(MelolResponse, self).__init__(data, status=status)
@@ -28,9 +30,11 @@ def schedule_list(request):
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
-        Schedule.objects.create(start_date=request.data['start_date'], end_date=request.data['end_date'], event=request.data['event'])
+        new_schedule = Schedule.objects.create(start_date=request.data['start_date'], end_date=request.data['end_date'], event=request.data['event'])
         schedules = Schedule.objects.all()
         serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
+
+        requests.get('http://localhost:3000/schedule/changed', params={'type':'add'})
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
@@ -43,7 +47,17 @@ def schedule_list(request):
         schedule.save()
         schedules = Schedule.objects.all()
 
+        requests.get('http://localhost:3000/schedule/changed', params={'type':'edit'})
+
         serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
+
+        requests.get('http://localhost:3000/schedule/changed', params={
+            'type':'edit',
+            'id':schedule.id,
+            'start_date':schedule.start_date,
+            'end_date':schedule.end_date,
+            'event':schedule.event
+        })
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
@@ -52,6 +66,7 @@ def schedule_delete(request):
     if request.method == 'POST':
         try:
             schedule = Schedule.objects.get(id=request.data['id'])
+            schedule_id = schedule.id
         except:
             print("No exist schedule.")
             return MelolResponse("", status=status.HTTP_404_NOT_FOUND)
@@ -59,6 +74,15 @@ def schedule_delete(request):
         schedule.delete()
         schedules = Schedule.objects.all()
         serializer = ScheduleSerializer(schedules, many=True, context={'request':request})
+
+        r = requests.get('http://localhost:3000/schedule/changed', params={
+            'type':'delete',
+            'id':schedule_id
+        })
+
+        print(r.url)
+
+
 
         return MelolResponse(serializer.data, status=status.HTTP_200_OK)
 
