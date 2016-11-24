@@ -34,7 +34,8 @@ class Photo(models.Model):
             self.file.delete()
         except:
             print("이미 사진이 삭제 됐습니다.")
-            super(Photo, self).delete(*args, **kwargs)
+
+        super(Photo, self).delete(*args, **kwargs)
 
 class Music(models.Model):
     # title = models.CharField(max_length=100)
@@ -57,7 +58,7 @@ class Music(models.Model):
         except:
             print("이미 음악 파일이 삭제 됐습니다.")
 
-            super(Music, self).delete(*args, **kwargs)
+        super(Music, self).delete(*args, **kwargs)
 
 
 class Platform(models.Model):
